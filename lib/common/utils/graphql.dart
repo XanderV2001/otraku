@@ -237,6 +237,42 @@ abstract class GqlQuery {
     }
   ''';
 
+  static const schedule = r'''
+    query Schedule($page: Int, $type: MediaType, $search: String, $status: MediaStatus, $format_in: [MediaFormat], $genre_in: [String], $genre_not_in: [String], $tag_in: [String], $tag_not_in: [String], $onList: Boolean, $countryOfOrigin: CountryCode, $season: MediaSeason, $seasonYear: Int, $sources: [MediaSource], $isAdult: Boolean, $sort: [MediaSort]) {
+      Page(page: $page) {
+        pageInfo {
+          hasNextPage
+        }
+        media(type: $type, search: $search, status: $status, format_in: $format_in, genre_in: $genre_in, genre_not_in: $genre_not_in, tag_in: $tag_in, tag_not_in: $tag_not_in, onList: $onList, isAdult: $isAdult, countryOfOrigin: $countryOfOrigin, season: $season, seasonYear: $seasonYear, source_in: $sources, sort: $sort) {
+          id
+          title {
+            userPreferred
+          }
+          season
+          format
+          genres
+          duration
+          episodes
+          mediaListEntry {
+            status
+          }
+          popularity
+          coverImage {
+            extraLarge
+            large
+            medium
+          }
+          nextAiringEpisode {
+            airingAt
+            episode
+            timeUntilAiring
+          }
+          isAdult
+        }
+      }
+    }
+  ''';
+
   static const character = r'''
     query Character($id: Int, $sort: [MediaSort], $page: Int = 1, $onList: Boolean,
         $withInfo: Boolean = false, $withAnime: Boolean = false, $withManga: Boolean = false) {
@@ -728,8 +764,7 @@ abstract class GqlMutation {
     }
   ''';
 
-  static const toggleFollow =
-      r'''mutation ToggleFollow($userId: Int) {ToggleFollow(userId: $userId) {isFollowing}}''';
+  static const toggleFollow = r'''mutation ToggleFollow($userId: Int) {ToggleFollow(userId: $userId) {isFollowing}}''';
 
   static const rateReview = r'''
     mutation RateReview($id: Int, $rating: ReviewRating) {
