@@ -4,9 +4,9 @@ import 'package:ionicons/ionicons.dart';
 import 'package:otraku/modules/activity/activities_providers.dart';
 import 'package:otraku/modules/discover/discover_providers.dart';
 import 'package:otraku/common/utils/options.dart';
+import 'package:otraku/modules/schedule/schedule_providers.dart';
 
-final homeProvider =
-    ChangeNotifierProvider.autoDispose((ref) => HomeNotifier());
+final homeProvider = ChangeNotifierProvider.autoDispose((ref) => HomeNotifier());
 
 class HomeNotifier extends ChangeNotifier {
   HomeTab _homeTab = Options().defaultHomeTab;
@@ -24,8 +24,7 @@ class HomeNotifier extends ChangeNotifier {
   ColorScheme? _systemLightScheme;
   ColorScheme? _systemDarkScheme;
 
-  ColorScheme? getSystemScheme(bool isDark) =>
-      isDark ? _systemDarkScheme : _systemLightScheme;
+  ColorScheme? getSystemScheme(bool isDark) => isDark ? _systemDarkScheme : _systemLightScheme;
 
   void setSystemSchemes(ColorScheme? l, ColorScheme? d) {
     _systemLightScheme = l;
@@ -35,9 +34,11 @@ class HomeNotifier extends ChangeNotifier {
   /// The discover and feed tab are loaded lazily, when first opened.
   var _didLoadFeed = false;
   var _didLoadDiscover = false;
+  var _didLoadSchedule = false;
 
   bool get didLoadFeed => _didLoadFeed;
   bool get didLoadDiscover => _didLoadDiscover;
+  bool get didLoadSchedule => _didLoadSchedule;
 
   void lazyLoadTabs(WidgetRef ref) {
     if (_homeTab == HomeTab.feed && !_didLoadFeed) {
@@ -49,6 +50,11 @@ class HomeNotifier extends ChangeNotifier {
       _didLoadDiscover = true;
       discoverLoadMore(ref);
     }
+
+    if (_homeTab == HomeTab.schedule && !_didLoadSchedule) {
+      _didLoadSchedule = true;
+      scheduleLoadMore(ref);
+    }
   }
 
   /// In preview mode, user's collections first load only current media.
@@ -59,8 +65,7 @@ class HomeNotifier extends ChangeNotifier {
   var _didExpandAnimeCollection = !Options().animeCollectionPreview;
   var _didExpandMangaCollection = !Options().mangaCollectionPreview;
 
-  bool didExpandCollection(bool ofAnime) =>
-      ofAnime ? _didExpandAnimeCollection : _didExpandMangaCollection;
+  bool didExpandCollection(bool ofAnime) => ofAnime ? _didExpandAnimeCollection : _didExpandMangaCollection;
 
   void expandCollection(bool ofAnime) {
     if (ofAnime) {
@@ -80,6 +85,7 @@ enum HomeTab {
   anime,
   manga,
   discover,
+  schedule,
   profile;
 
   String get title => switch (this) {
@@ -87,6 +93,7 @@ enum HomeTab {
         anime => 'Anime',
         manga => 'Manga',
         discover => 'Discover',
+        schedule => 'Schedule',
         profile => 'Profile',
       };
 
@@ -95,6 +102,7 @@ enum HomeTab {
         anime => Ionicons.film_outline,
         manga => Ionicons.bookmark_outline,
         discover => Ionicons.compass_outline,
+        schedule => Ionicons.calendar_clear_outline,
         profile => Ionicons.person_outline,
       };
 }
