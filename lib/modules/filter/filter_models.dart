@@ -22,8 +22,7 @@ class CollectionMediaFilter extends MediaFilter<CollectionMediaFilter> {
   final tagNotIn = <String>[];
   final tagIdIn = <int>[];
   final tagIdNotIn = <int>[];
-  late EntrySort sort =
-      _ofAnime ? Options().defaultAnimeSort : Options().defaultMangaSort;
+  late EntrySort sort = _ofAnime ? Options().defaultAnimeSort : Options().defaultMangaSort;
   int? startYearFrom;
   int? startYearTo;
   OriginCountry? country;
@@ -102,6 +101,60 @@ class DiscoverMediaFilter extends MediaFilter<DiscoverMediaFilter> {
         if (season != null) 'season': season!.name,
         if (startYearFrom != null) 'startFrom': '${startYearFrom! - 1}9999',
         if (startYearTo != null) 'startTo': '${startYearTo! + 1}0000',
+        if (country != null) 'countryOfOrigin': country!.code,
+        if (onList != null) 'onList': onList,
+        if (isAdult != null) 'isAdult': isAdult,
+      };
+}
+
+class ScheduleMediaFilter extends MediaFilter<ScheduleMediaFilter> {
+  ScheduleMediaFilter(super._ofAnime);
+
+  final formats = <String>[];
+  final genreIn = <String>[];
+  final genreNotIn = <String>[];
+  final tagIn = <String>[];
+  final tagNotIn = <String>[];
+  final sources = <String>[];
+  MediaSort sort = Options().defaultScheduleSort;
+  MediaSeason? season;
+  int? seasonYear;
+  OriginCountry? country;
+  bool? onList;
+  bool? isAdult;
+
+  set ofAnime(bool val) {
+    _ofAnime = val;
+    formats.clear();
+  }
+
+  @override
+  clear() => ScheduleMediaFilter(_ofAnime);
+
+  @override
+  copy() => ScheduleMediaFilter(_ofAnime)
+    ..formats.addAll(formats)
+    ..genreIn.addAll(genreIn)
+    ..genreNotIn.addAll(genreNotIn)
+    ..tagIn.addAll(tagIn)
+    ..tagNotIn.addAll(tagNotIn)
+    ..sources.addAll(sources)
+    ..sort = sort
+    ..season = season
+    ..seasonYear = seasonYear
+    ..country = country
+    ..onList = onList
+    ..isAdult = isAdult;
+
+  Map<String, dynamic> toMap() => {
+        'sort': sort.name,
+        if (formats.isNotEmpty) 'format_in': formats,
+        if (genreIn.isNotEmpty) 'genre_in': genreIn,
+        if (genreNotIn.isNotEmpty) 'genre_not_in': genreNotIn,
+        if (tagIn.isNotEmpty) 'tag_in': tagIn,
+        if (tagNotIn.isNotEmpty) 'tag_not_in': tagNotIn,
+        if (sources.isNotEmpty) 'sources': sources,
+        if (season != null) 'season': season!.name,
         if (country != null) 'countryOfOrigin': country!.code,
         if (onList != null) 'onList': onList,
         if (isAdult != null) 'isAdult': isAdult,

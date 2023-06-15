@@ -31,8 +31,7 @@ class _FilterView<T extends MediaFilter<T>> extends StatefulWidget {
   State<_FilterView<T>> createState() => __FilterViewState<T>();
 }
 
-class __FilterViewState<T extends MediaFilter<T>>
-    extends State<_FilterView<T>> {
+class __FilterViewState<T extends MediaFilter<T>> extends State<_FilterView<T>> {
   late final T _filter = widget.filter.copy();
 
   @override
@@ -58,12 +57,9 @@ class __FilterViewState<T extends MediaFilter<T>>
 
     return OpaqueSheetView(
       buttons: BottomBar(
-        Options().leftHanded
-            ? [applyButton, clearButton]
-            : [clearButton, applyButton],
+        Options().leftHanded ? [applyButton, clearButton] : [clearButton, applyButton],
       ),
-      builder: (context, scrollCtrl) =>
-          widget.builder(context, scrollCtrl, _filter),
+      builder: (context, scrollCtrl) => widget.builder(context, scrollCtrl, _filter),
     );
   }
 }
@@ -125,12 +121,9 @@ class CollectionFilterView extends StatelessWidget {
           const Divider(indent: 15, endIndent: 15),
           ChipSelector(
             title: 'Country',
-            options: OriginCountry.values
-                .map((v) => Convert.clarifyEnum(v.name)!)
-                .toList(),
+            options: OriginCountry.values.map((v) => Convert.clarifyEnum(v.name)!).toList(),
             selected: filter.country?.index,
-            onChanged: (val) => filter.country =
-                val == null ? null : OriginCountry.values.elementAt(val),
+            onChanged: (val) => filter.country = val == null ? null : OriginCountry.values.elementAt(val),
           ),
         ],
       ),
@@ -173,13 +166,9 @@ class DiscoverFilterView extends StatelessWidget {
           if (filter.ofAnime)
             ChipSelector(
               title: 'Season',
-              options: MediaSeason.values
-                  .map((v) => Convert.clarifyEnum(v.name)!)
-                  .toList(),
+              options: MediaSeason.values.map((v) => Convert.clarifyEnum(v.name)!).toList(),
               selected: filter.season?.index,
-              onChanged: (selected) => filter.season = selected != null
-                  ? MediaSeason.values.elementAt(selected)
-                  : null,
+              onChanged: (selected) => filter.season = selected != null ? MediaSeason.values.elementAt(selected) : null,
             ),
           const Divider(indent: 15, endIndent: 15),
           Padding(
@@ -209,12 +198,114 @@ class DiscoverFilterView extends StatelessWidget {
           const Divider(indent: 15, endIndent: 15),
           ChipSelector(
             title: 'Country',
-            options: OriginCountry.values
-                .map((v) => Convert.clarifyEnum(v.name)!)
-                .toList(),
+            options: OriginCountry.values.map((v) => Convert.clarifyEnum(v.name)!).toList(),
             selected: filter.country?.index,
-            onChanged: (val) => filter.country =
-                val == null ? null : OriginCountry.values.elementAt(val),
+            onChanged: (val) => filter.country = val == null ? null : OriginCountry.values.elementAt(val),
+          ),
+          ChipEnumMultiSelector(
+            title: 'Sources',
+            options: MediaSource.values,
+            selected: filter.sources,
+          ),
+          ChipSelector(
+            title: 'List Presence',
+            options: const ['On List', 'Not on List'],
+            selected: filter.onList == null
+                ? null
+                : filter.onList!
+                    ? 0
+                    : 1,
+            onChanged: (val) => filter.onList = val == null
+                ? null
+                : val == 0
+                    ? true
+                    : false,
+          ),
+          ChipSelector(
+            title: 'Age Restriction',
+            options: const ['Adult', 'Non-Adult'],
+            selected: filter.isAdult == null
+                ? null
+                : filter.isAdult!
+                    ? 0
+                    : 1,
+            onChanged: (val) => filter.isAdult = val == null
+                ? null
+                : val == 0
+                    ? true
+                    : false,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ScheduleFilterView extends StatelessWidget {
+  const ScheduleFilterView({required this.filter, required this.onChanged});
+
+  final ScheduleMediaFilter filter;
+  final void Function(ScheduleMediaFilter) onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheduleYears = [DateTime.now().year, DateTime.now().year + 1, DateTime.now().year + 2];
+
+    return _FilterView<ScheduleMediaFilter>(
+      filter: filter,
+      onChanged: onChanged,
+      builder: (context, scrollCtrl, filter) => ListView(
+        controller: scrollCtrl,
+        padding: const EdgeInsets.only(top: 20, bottom: 60),
+        children: [
+          ChipSelector(
+            title: 'Sort',
+            options: MediaSort.values.map((s) => s.label).toList(),
+            selected: filter.sort.index,
+            mustHaveSelected: true,
+            onChanged: (i) => filter.sort = MediaSort.values.elementAt(i!),
+          ),
+          ChipEnumMultiSelector(
+            title: 'Formats',
+            options: filter.ofAnime ? AnimeFormat.values : MangaFormat.values,
+            selected: filter.formats,
+          ),
+          if (filter.ofAnime)
+            ChipSelector(
+              title: 'Season',
+              options: MediaSeason.values.map((v) => Convert.clarifyEnum(v.name)!).toList(),
+              selected: filter.season?.index,
+              onChanged: (selected) => filter.season = selected != null ? MediaSeason.values.elementAt(selected) : null,
+            ),
+          ChipSelector(
+            title: 'Year',
+            options: scheduleYears.map((v) => v.toString()).toList(),
+            selected: scheduleYears.indexOf(filter.seasonYear ?? DateTime.now().year),
+            mustHaveSelected: true,
+            onChanged: (selected) => filter.seasonYear = scheduleYears.elementAt(selected!),
+          ),
+          const Divider(indent: 15, endIndent: 15),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Consumer(
+              builder: (context, ref, _) => ref.watch(tagsProvider).when(
+                    loading: () => const Loader(),
+                    error: (_, __) => const Text('Failed to load tags'),
+                    data: (tags) => ChipTagGrid(
+                      inclusiveGenres: filter.genreIn,
+                      exclusiveGenres: filter.genreNotIn,
+                      inclusiveTags: filter.tagIn,
+                      exclusiveTags: filter.tagNotIn,
+                    ),
+                  ),
+            ),
+          ),
+          const Divider(indent: 15, endIndent: 15),
+          ChipSelector(
+            title: 'Country',
+            options: OriginCountry.values.map((v) => Convert.clarifyEnum(v.name)!).toList(),
+            selected: filter.country?.index,
+            onChanged: (val) => filter.country = val == null ? null : OriginCountry.values.elementAt(val),
           ),
           ChipEnumMultiSelector(
             title: 'Sources',
@@ -302,9 +393,7 @@ class _EntrySortChipSelectorState extends State<_EntrySortChipSelector> {
           showCheckmark: false,
           avatar: selected == index
               ? Icon(
-                  descending
-                      ? Icons.arrow_downward_rounded
-                      : Icons.arrow_upward_rounded,
+                  descending ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded,
                   color: Theme.of(context).colorScheme.onPrimaryContainer,
                 )
               : null,
@@ -443,9 +532,7 @@ class TagSheetBodyState extends ConsumerState<TagSheetBody> {
                         categoryLoop:
                         for (int i = 0; i < _tags.categoryNames.length; i++) {
                           for (final j in _tags.categoryItems[i]) {
-                            if (_tags.names[j]
-                                .toLowerCase()
-                                .contains(_filter)) {
+                            if (_tags.names[j].toLowerCase().contains(_filter)) {
                               _categoryIndices.add(i);
                               continue categoryLoop;
                             }
@@ -492,9 +579,7 @@ class TagSheetBodyState extends ConsumerState<TagSheetBody> {
 
                             final itemsIndex = _categoryIndices[_index];
                             for (final i in _tags.categoryItems[itemsIndex]) {
-                              if (_tags.names[i]
-                                  .toLowerCase()
-                                  .contains(_filter)) _itemIndices.add(i);
+                              if (_tags.names[i].toLowerCase().contains(_filter)) _itemIndices.add(i);
                             }
 
                             setState(() {});

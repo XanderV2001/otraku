@@ -11,11 +11,14 @@ final collectionFilterProvider = StateProvider.autoDispose.family(
 
 /// If the [CollectionTag] is `null`, this is related to the discover tab.
 /// Otherwise, it's related to a collection.
-final searchProvider =
-    StateProvider.autoDispose.family<String?, CollectionTag?>((ref, _) => null);
+final searchProvider = StateProvider.autoDispose.family<String?, CollectionTag?>((ref, _) => null);
 
 final discoverFilterProvider = ChangeNotifierProvider.autoDispose(
   (ref) => DiscoverFilterNotifier(Options().defaultDiscoverType),
+);
+
+final scheduleFilterProvider = ChangeNotifierProvider.autoDispose(
+  (ref) => ScheduleFilterNotifier(Options().defaultDiscoverType),
 );
 
 class DiscoverFilterNotifier extends ChangeNotifier {
@@ -48,6 +51,32 @@ class DiscoverFilterNotifier extends ChangeNotifier {
   set birthday(bool val) {
     if (_birthday == val) return;
     _birthday = val;
+    notifyListeners();
+  }
+}
+
+class ScheduleFilterNotifier extends ChangeNotifier {
+  ScheduleFilterNotifier(this._type);
+
+  DiscoverType _type;
+  late var _filter = ScheduleMediaFilter(_type == DiscoverType.anime);
+
+  DiscoverType get type => _type;
+  ScheduleMediaFilter get filter => _filter;
+
+  set type(DiscoverType val) {
+    if (_type == val) return;
+    if (val == DiscoverType.anime) {
+      _filter = ScheduleMediaFilter(true);
+    } else {
+      _filter = ScheduleMediaFilter(false);
+    }
+    _type = val;
+    notifyListeners();
+  }
+
+  set filter(ScheduleMediaFilter val) {
+    _filter = val;
     notifyListeners();
   }
 }

@@ -20,6 +20,7 @@ enum _OptionKey {
   defaultAnimeSort,
   defaultMangaSort,
   defaultDiscoverSort,
+  defaultScheduleSort,
   imageQuality,
   animeCollectionPreview,
   mangaCollectionPreview,
@@ -71,6 +72,7 @@ class Options extends ChangeNotifier {
     this._defaultAnimeSort,
     this._defaultMangaSort,
     this._defaultDiscoverSort,
+    this._defaultScheduleSort,
     this._imageQuality,
     this._animeCollectionPreview,
     this._mangaCollectionPreview,
@@ -112,32 +114,32 @@ class Options extends ChangeNotifier {
     int mangaSort = _optionBox.get(_OptionKey.defaultMangaSort.name) ?? 0;
     if (mangaSort < 0 || mangaSort >= EntrySort.values.length) mangaSort = 0;
 
-    int discoverSort = _optionBox.get(_OptionKey.defaultDiscoverSort.name) ??
-        MediaSort.TRENDING_DESC.index;
+    int discoverSort = _optionBox.get(_OptionKey.defaultDiscoverSort.name) ?? MediaSort.TRENDING_DESC.index;
     if (discoverSort < 0 || discoverSort >= MediaSort.values.length) {
       discoverSort = MediaSort.TRENDING_DESC.index;
     }
 
+    int scheduleSort = _optionBox.get(_OptionKey.defaultScheduleSort.name) ?? MediaSort.POPULARITY_DESC.index;
+    if (scheduleSort < 0 || scheduleSort >= MediaSort.values.length) {
+      scheduleSort = MediaSort.POPULARITY_DESC.index;
+    }
+
     int imageQualityIndex = _optionBox.get(_OptionKey.imageQuality.name) ?? 1;
-    if (imageQualityIndex < 0 ||
-        imageQualityIndex >= ImageQuality.values.length) {
+    if (imageQualityIndex < 0 || imageQualityIndex >= ImageQuality.values.length) {
       imageQualityIndex = 1;
     }
 
-    int discoverItemView =
-        _optionBox.get(_OptionKey.discoverItemView.name) ?? 0;
+    int discoverItemView = _optionBox.get(_OptionKey.discoverItemView.name) ?? 0;
     if (discoverItemView < 0 || discoverItemView > 1) {
       discoverItemView = 0;
     }
 
-    int collectionItemView =
-        _optionBox.get(_OptionKey.collectionItemView.name) ?? 0;
+    int collectionItemView = _optionBox.get(_OptionKey.collectionItemView.name) ?? 0;
     if (collectionItemView < 0 || collectionItemView > 1) {
       collectionItemView = 0;
     }
 
-    int collectionPreviewItemView =
-        _optionBox.get(_OptionKey.collectionPreviewItemView.name) ?? 0;
+    int collectionPreviewItemView = _optionBox.get(_OptionKey.collectionPreviewItemView.name) ?? 0;
     if (collectionPreviewItemView < 0 || collectionPreviewItemView > 1) {
       collectionPreviewItemView = 0;
     }
@@ -151,6 +153,7 @@ class Options extends ChangeNotifier {
       EntrySort.values[animeSort],
       EntrySort.values[mangaSort],
       MediaSort.values[discoverSort],
+      MediaSort.values[scheduleSort],
       ImageQuality.values.elementAt(imageQualityIndex),
       _optionBox.get(_OptionKey.animeCollectionPreview.name) ?? true,
       _optionBox.get(_OptionKey.mangaCollectionPreview.name) ?? true,
@@ -223,6 +226,7 @@ class Options extends ChangeNotifier {
   EntrySort _defaultAnimeSort;
   EntrySort _defaultMangaSort;
   MediaSort _defaultDiscoverSort;
+  MediaSort _defaultScheduleSort;
   ImageQuality _imageQuality;
   bool _animeCollectionPreview;
   bool _mangaCollectionPreview;
@@ -250,6 +254,7 @@ class Options extends ChangeNotifier {
   EntrySort get defaultAnimeSort => _defaultAnimeSort;
   EntrySort get defaultMangaSort => _defaultMangaSort;
   MediaSort get defaultDiscoverSort => _defaultDiscoverSort;
+  MediaSort get defaultScheduleSort => _defaultScheduleSort;
   ImageQuality get imageQuality => _imageQuality;
   bool get animeCollectionPreview => _animeCollectionPreview;
   bool get mangaCollectionPreview => _mangaCollectionPreview;
@@ -362,6 +367,11 @@ class Options extends ChangeNotifier {
     _optionBox.put(_OptionKey.defaultDiscoverSort.name, v.index);
   }
 
+  set defaultScheduleSort(MediaSort v) {
+    _defaultScheduleSort = v;
+    _optionBox.put(_OptionKey.defaultScheduleSort.name, v.index);
+  }
+
   set imageQuality(ImageQuality v) {
     _imageQuality = v;
     _optionBox.put(_OptionKey.imageQuality.name, v.index);
@@ -446,16 +456,12 @@ class Options extends ChangeNotifier {
   void setIdOf(int a, int? v) {
     if (a < 0 || a > 1) return;
     a == 0 ? _id0 = v : _id1 = v;
-    v != null
-        ? _profileBox.put('${_ProfileKey.id.name}$a', v)
-        : _profileBox.delete('${_ProfileKey.id.name}$a');
+    v != null ? _profileBox.put('${_ProfileKey.id.name}$a', v) : _profileBox.delete('${_ProfileKey.id.name}$a');
   }
 
   void setExpirationOf(int a, int? v) {
     if (a < 0 || a > 1) return;
     a == 0 ? _expiration0 = v : _expiration1 = v;
-    v != null
-        ? _profileBox.put('${_ProfileKey.expiration.name}$a', v)
-        : _profileBox.delete('${_ProfileKey.expiration.name}$a');
+    v != null ? _profileBox.put('${_ProfileKey.expiration.name}$a', v) : _profileBox.delete('${_ProfileKey.expiration.name}$a');
   }
 }
